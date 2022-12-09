@@ -1,4 +1,7 @@
-use clap::{App, Args, Arg, value_parser};
+#[allow(unused_imports)]
+
+use clap::{App, Args, Arg, value_parser, ArgMatches};
+use ascklrt_search::cli::input;
 
 /**
  *
@@ -12,33 +15,17 @@ use clap::{App, Args, Arg, value_parser};
  *
  */
 fn main() {
-    let matches = App::new("ascklrt-search")
-        .version("1.0.1")
-        .author("rast")
-        .arg(
-            // 指定root_path
-            Arg::new("rootpath")
-                .short('r')
-                .long("rootpath")
-                .takes_value(true)
-                .value_parser(clap::value_parser!(String))
-        )
-        .arg(
-            // 指定文件名参数
-            Arg::new("file")
-                .short('n')
-                .long("file")
-                .takes_value(true)
-                .value_parser(clap::value_parser!(String))
-        ).get_matches();
-
+    let matches = input::build_cli_param();
 
     // 使用get_one函数必须保证类型和上面的 .value_parser一致
     // Users have to match the type from Arg::value_parser with ArgMatches::get_one::<T>
     // https://github.com/clap-rs/clap/issues/3792
     let filename = match matches.get_one::<String>("file") {
         Some(f) => f,
-        None => panic!("param -f filename must exist，you can see --help"),
+        None => {
+            println!("param -f filename must exist，you can see --help");
+            return;
+        }
     };
 
     println!("filename: {}", filename);
